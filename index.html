@@ -23,45 +23,55 @@
             --overlay-bg: rgba(0, 0, 0, 0.98);
         }
 
-        /* Bloqueio de Rolagem e Ajuste de Tela (PWA) */
+        /* Bloqueio Total de Rolagem e Ajuste de Altura Dinâmica (PWA) */
         html, body {
-            height: 100dvh;
+            height: 100dvh; /* Altura dinâmica do viewport */
             width: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: hidden; /* Remove rolagem */
             background-color: var(--bg-color);
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             color: var(--text-color);
-            position: fixed;
+            position: fixed; /* Evita 'puxar' a página no iOS */
             /* Evita a barra branca no iPhone X e mais recentes */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; /* Remove o flash de toque cinza */
+        }
 
         .main-container {
             width: 100%;
             max-width: 450px;
-            height: 100%;
+            height: 100dvh;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: space-between; /* Distribui o espaço entre os elementos */
             padding: 15px 20px;
         }
 
+        /* Top Bar fixada no topo */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 50px;
+            flex-shrink: 0;
         }
 
         .logo { color: var(--primary-green-light); font-weight: bold; font-size: 1.1rem; }
 
-        .header-section { text-align: center; flex-shrink: 0; }
+        /* Section Recebedor centralizada e fixada */
+        .header-section { 
+            text-align: center; 
+            flex-shrink: 0;
+            margin: 10px 0;
+        }
 
         .recebedor-badge {
             background-color: var(--primary-green);
@@ -79,52 +89,61 @@
             text-overflow: ellipsis;
         }
 
+        /* Display do Valor responsivo */
         .valor-display {
-            font-size: clamp(2.5rem, 11vh, 4rem);
+            font-size: clamp(2.5rem, 11vh, 4rem); /* Diminui em telas pequenas */
             font-weight: bold;
             margin: 10px 0;
             letter-spacing: -1px;
+            word-break: break-all;
         }
 
+        /* Teclado Inteligente (Preenche o espaço disponível) */
         .teclado {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            flex-grow: 1;
+            flex-grow: 1; /* Faz o teclado ocupar o máximo de espaço central */
             align-content: center;
-            max-height: 400px;
+            max-height: 400px; /* Limita a altura máxima em telas grandes */
         }
 
         .tecla {
             background-color: var(--keypad-bg);
             border: none;
             color: white;
-            font-size: clamp(1.2rem, 5vh, 1.8rem);
+            font-size: clamp(1.2rem, 5vh, 1.8rem); /* Fonte responsiva */
             border-radius: 16px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            aspect-ratio: 1.6 / 1;
+            aspect-ratio: 1.6 / 1; /* Mantém a proporção da tecla */
             transition: background 0.1s, transform 0.1s;
         }
 
-        .tecla:active { background-color: #30363d; transform: scale(0.95); }
+        .tecla:active { 
+            background-color: #30363d; 
+            transform: scale(0.95); /* Efeito de clique */
+        }
 
+        /* Botão Gerar fixado no rodapé */
         .btn-gerar {
             background-color: var(--primary-green);
             color: white;
             border: none;
             width: 100%;
-            padding: clamp(15px, 3vh, 25px);
+            padding: clamp(15px, 3vh, 25px); /* Padding responsivo */
             border-radius: 18px;
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
             margin-bottom: 5px;
+            flex-shrink: 0; /* Impede que o botão diminua */
         }
 
+        /* Estilos dos Botões Secundários */
         .btn-whatsapp {
             background-color: #25d366;
             color: white;
@@ -141,6 +160,7 @@
             cursor: pointer;
         }
 
+        /* Modais mantidos conforme lógica anterior */
         .modal {
             display: none;
             position: fixed;
@@ -206,7 +226,7 @@
     <div class="main-container">
         <div class="top-bar">
             <div class="logo">🟢 TC QR-Codes</div>
-            <div style="font-size: 1.2rem; cursor: pointer;" onclick="openModal('modal-config')">⚙️</div>
+            <div style="font-size: 1.2rem; cursor: pointer; padding: 5px;" onclick="openModal('modal-config')">⚙️</div>
         </div>
 
         <div class="header-section">
@@ -240,7 +260,7 @@
             <input type="text" id="in-chave" placeholder="Chave PIX (CPF, Celular, etc)">
             <textarea id="in-msg" placeholder="Mensagem de agradecimento para o WhatsApp..."></textarea>
             <button class="btn-gerar" onclick="salvarConfig()">Salvar e Manter Dados</button>
-            <p onclick="closeModal('modal-config')" style="cursor:pointer; color:var(--text-muted); margin-top:15px;">Voltar</p>
+            <p onclick="closeModal('modal-config')" style="cursor:pointer; color:var(--text-muted); margin-top:15px; padding: 5px;">Voltar</p>
         </div>
     </div>
 
@@ -259,6 +279,7 @@
     </div>
 
     <script>
+        // Lógica mantida conforme versão permanente v5
         let valorCents = 0;
         let config = { nome: "", chave: "", cidade: "SAO PAULO", mensagem: "" };
         let currentPayload = "";
