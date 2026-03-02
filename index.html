@@ -25,34 +25,40 @@
 
         /* Bloqueio Total de Rolagem e Ajuste de Altura Dinâmica (PWA) */
         html, body {
-            height: 100dvh; /* Altura dinâmica do viewport */
+            height: 100%; /* Fallback */
+            height: -webkit-fill-available; /* Super-importante para iOS Safari */
+            height: 100dvh; /* Altura dinâmica moderna */
             width: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Remove rolagem */
+            overflow: hidden; /* Remove rolagem do corpo */
             background-color: var(--bg-color);
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             color: var(--text-color);
-            position: fixed; /* Evita 'puxar' a página no iOS */
-            /* Evita a barra branca no iPhone X e mais recentes */
+            position: fixed; /* Fixa o corpo para evitar puxar */
+            
+            /* safe-area-inset para iPhone X+ */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
 
         * { 
             box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; /* Remove o flash de toque cinza */
+            -webkit-tap-highlight-color: transparent; 
         }
 
         .main-container {
             width: 100%;
             max-width: 450px;
+            /* O segredo para não cortar: flex container ocupando toda a altura disponível */
             height: 100dvh;
+            height: -webkit-fill-available;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Distribui o espaço entre os elementos */
-            padding: 15px 20px;
+            /* Distribuição vertical flexível */
+            justify-content: flex-start; 
+            padding: 10px 15px; /* Padding reduzido */
         }
 
         /* Top Bar fixada no topo */
@@ -60,27 +66,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 50px;
-            flex-shrink: 0;
+            height: 40px; /* Altura reduzida */
+            flex: 0 0 auto; /* Não cresce, não encolhe */
+            margin-bottom: 5px;
         }
 
-        .logo { color: var(--primary-green-light); font-weight: bold; font-size: 1.1rem; }
+        .logo { color: var(--primary-green-light); font-weight: bold; font-size: 1rem; }
 
-        /* Section Recebedor centralizada e fixada */
+        /* Section Recebedor centralizada e flexível */
         .header-section { 
             text-align: center; 
-            flex-shrink: 0;
-            margin: 10px 0;
+            flex: 0 1 auto; /* Pode encolher se necessário */
+            margin-bottom: 5px;
         }
 
         .recebedor-badge {
             background-color: var(--primary-green);
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 0.9rem;
+            padding: 6px 15px; /* Padding reduzido */
+            border-radius: 20px;
+            font-size: 0.8rem; /* Fonte reduzida */
             display: inline-block;
             font-weight: 600;
-            margin-top: 5px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             max-width: 100%;
@@ -89,61 +95,78 @@
             text-overflow: ellipsis;
         }
 
-        /* Display do Valor responsivo */
+        /* Display do Valor super-flexível */
         .valor-display {
-            font-size: clamp(2.5rem, 11vh, 4rem); /* Diminui em telas pequenas */
+            font-size: clamp(2rem, 8vh, 3.5rem); /* Diminui agressivamente em telas pequenas */
             font-weight: bold;
-            margin: 10px 0;
+            margin: 5px 0;
             letter-spacing: -1px;
             word-break: break-all;
+            flex: 0 1 auto; /* Pode encolher */
         }
 
-        /* Teclado Inteligente (Preenche o espaço disponível) */
+        /* Teclado Inteligente e Super-Flexível */
         .teclado {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            flex-grow: 1; /* Faz o teclado ocupar o máximo de espaço central */
-            align-content: center;
-            max-height: 400px; /* Limita a altura máxima em telas grandes */
+            gap: 8px; /* Gap reduzido */
+            flex: 1 1 auto; /* Ocupa o espaço restante e PODE ENCOLHER */
+            align-content: center; /* Centraliza as teclas verticalmente no espaço delas */
+            margin-bottom: 10px;
+            min-height: 0; /* Permite que o grid encolha abaixo de seu conteúdo */
         }
 
         .tecla {
             background-color: var(--keypad-bg);
             border: none;
             color: white;
-            font-size: clamp(1.2rem, 5vh, 1.8rem); /* Fonte responsiva */
-            border-radius: 16px;
+            font-size: clamp(1rem, 4vh, 1.6rem); /* Fonte responsiva */
+            border-radius: 12px; /* Raio reduzido */
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            aspect-ratio: 1.6 / 1; /* Mantém a proporção da tecla */
-            transition: background 0.1s, transform 0.1s;
+            /* aspect-ratio removido para permitir achatamento em telas curtas */
+            height: 100%; /* Preenche a célula do grid */
+            min-height: 40px; /* Altura mínima para garantir tocabilidade */
+            transition: background 0.1s;
         }
 
         .tecla:active { 
             background-color: #30363d; 
-            transform: scale(0.95); /* Efeito de clique */
         }
 
-        /* Botão Gerar fixado no rodapé */
+        /* Botão Gerar fixado no rodapé com padding de segurança */
         .btn-gerar {
             background-color: var(--primary-green);
             color: white;
             border: none;
             width: 100%;
-            padding: clamp(15px, 3vh, 25px); /* Padding responsivo */
-            border-radius: 18px;
-            font-size: 1.1rem;
+            /* Padding responsivo com segurança para a borda inferior */
+            padding: clamp(12px, 2.5vh, 20px); 
+            padding-bottom: calc(clamp(12px, 2.5vh, 20px) + env(safe-area-inset-bottom));
+            border-radius: 15px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
-            margin-bottom: 5px;
-            flex-shrink: 0; /* Impede que o botão diminua */
+            flex: 0 0 auto; /* Não encolhe, mantém seu tamanho */
+            margin-top: auto; /* Empurra para o final do flex container */
         }
 
-        /* Estilos dos Botões Secundários */
+        /* REGRAS ESPECÍFICAS PARA TELAS MUITO CURTAS (como iPhone 6 Safari) */
+        @media (max-height: 600px) {
+            .main-container { padding: 5px 10px; }
+            .top-bar { height: 35px; margin-bottom: 2px; }
+            .logo { font-size: 0.9rem; }
+            .header-section { margin-bottom: 2px; }
+            .recebedor-badge { padding: 4px 10px; font-size: 0.7rem; }
+            .valor-display { font-size: 1.8rem; margin: 2px 0; }
+            .teclado { gap: 5px; margin-bottom: 5px; }
+            .tecla { border-radius: 8px; font-size: 1rem; min-height: 35px; }
+            .btn-gerar { padding: 10px; border-radius: 12px; font-size: 0.9rem; }
+        }
+
+        /* Estilos dos Botões Secundários nos Modais */
         .btn-whatsapp {
             background-color: #25d366;
             color: white;
@@ -160,7 +183,6 @@
             cursor: pointer;
         }
 
-        /* Modais mantidos conforme lógica anterior */
         .modal {
             display: none;
             position: fixed;
@@ -178,8 +200,8 @@
             background: var(--card-bg);
             width: 100%;
             max-width: 350px;
-            padding: 25px;
-            border-radius: 30px;
+            padding: 20px;
+            border-radius: 25px;
             text-align: center;
             border: 1px solid #30363d;
             max-height: 90vh;
@@ -191,31 +213,31 @@
             background: #0d1117;
             border: 1px solid #30363d;
             color: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin: 8px 0;
-            font-size: 1rem;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 6px 0;
+            font-size: 0.9rem;
             outline: none;
             font-family: inherit;
         }
 
-        textarea { resize: none; height: 80px; }
+        textarea { resize: none; height: 60px; }
 
         #qrcode canvas, #qrcode img {
             margin: 0 auto;
-            border: 10px solid white;
-            border-radius: 15px;
-            max-width: 180px;
+            border: 8px solid white;
+            border-radius: 12px;
+            max-width: 150px;
             height: auto;
         }
 
         .copy-link {
             background: #0d1117;
-            padding: 8px;
-            font-size: 0.55rem;
+            padding: 6px;
+            font-size: 0.5rem;
             word-break: break-all;
-            border-radius: 8px;
-            margin-top: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
             border: 1px dashed var(--primary-green);
             color: var(--text-muted);
         }
@@ -226,11 +248,11 @@
     <div class="main-container">
         <div class="top-bar">
             <div class="logo">🟢 TC QR-Codes</div>
-            <div style="font-size: 1.2rem; cursor: pointer; padding: 5px;" onclick="openModal('modal-config')">⚙️</div>
+            <div style="font-size: 1rem; cursor: pointer; padding: 5px;" onclick="openModal('modal-config')">⚙️</div>
         </div>
 
         <div class="header-section">
-            <div style="color: var(--text-muted); font-size: 0.65rem; letter-spacing: 2px; font-weight: bold; margin-bottom: 5px;">RECEBEDOR</div>
+            <div style="color: var(--text-muted); font-size: 0.6rem; letter-spacing: 1.5px; font-weight: bold;">RECEBEDOR</div>
             <div class="recebedor-badge" id="main-nome" onclick="openModal('modal-config')">Cadastrar Chave Pix</div>
             <div class="valor-display" id="display">R$ 0,00</div>
         </div>
@@ -255,26 +277,26 @@
 
     <div class="modal" id="modal-config">
         <div class="modal-card">
-            <h3 style="margin-top:0">Configurar Dados</h3>
+            <h3 style="margin-top:0; font-size: 1.1rem;">Configurar Dados</h3>
             <input type="text" id="in-nome" placeholder="Nome Completo">
             <input type="text" id="in-chave" placeholder="Chave PIX (CPF, Celular, etc)">
-            <textarea id="in-msg" placeholder="Mensagem de agradecimento para o WhatsApp..."></textarea>
-            <button class="btn-gerar" onclick="salvarConfig()">Salvar e Manter Dados</button>
-            <p onclick="closeModal('modal-config')" style="cursor:pointer; color:var(--text-muted); margin-top:15px; padding: 5px;">Voltar</p>
+            <textarea id="in-msg" placeholder="Mensagem de agradecimento WhatsApp..."></textarea>
+            <button class="btn-gerar" style="padding: 12px; margin-top: 10px;" onclick="salvarConfig()">Salvar Dados</button>
+            <p onclick="closeModal('modal-config')" style="cursor:pointer; color:var(--text-muted); margin-top:12px; font-size: 0.8rem; padding: 5px;">Voltar</p>
         </div>
     </div>
 
     <div class="modal" id="modal-qr">
         <div class="modal-card">
             <div id="qrcode"></div>
-            <div style="font-size: 1.2rem; font-weight:bold; color:var(--primary-green-light); margin: 8px 0;" id="qr-val"></div>
+            <div style="font-size: 1.1rem; font-weight:bold; color:var(--primary-green-light); margin: 6px 0;" id="qr-val"></div>
             <div class="copy-link" id="pix-link"></div>
             
-            <button class="btn-whatsapp" onclick="compartilharZap()">
+            <button class="btn-whatsapp" style="padding: 12px; font-size: 0.9rem;" onclick="compartilharZap()">
                 <span>Compartilhar no WhatsApp</span>
             </button>
 
-            <button class="btn-gerar" style="background-color: var(--keypad-bg); margin-top: 10px;" onclick="closeModal('modal-qr')">Fechar</button>
+            <button class="btn-gerar" style="background-color: var(--keypad-bg); margin-top: 8px; padding: 10px; font-size: 0.9rem;" onclick="closeModal('modal-qr')">Fechar</button>
         </div>
     </div>
 
